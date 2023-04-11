@@ -1,8 +1,13 @@
 const express = require('express')
 const path = require('path')
+const fillterUser = require('./middleware')
+
+const route = express.Router()
+
 
 const app = express();
 
+route.use(fillterUser)
 // app.get('/home',(req,res)=>{
 //     console.log('req from user -', req.query.name)
 //    res.send(`
@@ -35,26 +40,35 @@ const app = express();
 
 // ----Middleware----
 
-const fillterUser = (req,res,next) => {
-    if(!req.query.age){
-        res.send('Access denied')
-    }else if(req.query.age < 18){
-        res.send('bellow 18')
-    }else{
-        next()
-    }
-}
 
-app.use(fillterUser)
 
-app.get('/',(req,res)=>{
+// app.use(fillterUser)
+
+route.get('/',(req,res)=>{
     res.send('Hi there it is home page')
 })
-app.get('/user',(req,res)=>{
+route.get('/user',(req,res)=>{
     res.send('this is user page!')
 })
 
 
+// ----Route level Middleware -----
+// Route level middleware
+// apply middleware on single Route
+// middleware apply from difrent file
+
+app.get('/about',(req,res)=>{
+    res.send('Hi there it is home page')
+})
+app.get('/contact',fillterUser,(req,res)=>{
+    res.send('this is contact page!')
+})
+
+app.use('/',route)
 app.listen(8000,(req,res)=>{
     console.log('running at port 8000!')
 })
+
+
+
+
